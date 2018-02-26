@@ -38,15 +38,16 @@ jq(function(){
             jq('#divId').timer({
                 recordId: recordId,
                 seconds: secondsOnPage,
-                editable: true,
+                editable: false,
                 format: '%H:%M:%S',
             });
         }else {
             jq('#divId').timer({
                 recordId: recordId,
-                editable: true,
+                editable: false,
                 format: '%H:%M:%S',
             });
+            jq('#divId').timer('pause');
         }
         if (!getSessionStorageValue('timerstate')){
              setSessionStorageValue('timerstate', jq('#divId').data('state'));
@@ -73,7 +74,10 @@ jq(function(){
         setSessionStorageValue('timerstate', jq('#divId').data('state'));
     }
 
-    jq('#play').click(play);
+//    jq('#play').click(play);
+    jq('#play').click(function(){
+        openTimerstartPopup();
+    });
 
     jq('#pause').click(manualPause);
 
@@ -163,13 +167,34 @@ jq(function(){
         jq('#popup').removeClass('slds-fade-in-open');
         jq('#popup-backdrop').removeClass('slds-modal-backdrop--open');
     };
-
+    
     jq('#addtime').click(function(){
         openPopup();
     });
 
     jq('#close, #cancel').click(function(){
         closePopup();
+    });
+    
+    var openTimerstartPopup = function(){
+        jq('#timerstart_popup').addClass('slds-fade-in-open');
+        jq('#timerstart_popup_backdrop').addClass('slds-modal-backdrop--open');
+    };
+    
+    var closeTimerstartPopup = function(){    
+        jq('#comments').val('');
+        jq('#timerstart_popup').removeClass('slds-fade-in-open');
+        jq('#timerstart_popup_backdrop').removeClass('slds-modal-backdrop--open');
+    };
+    
+    jq('#start').click(function(){
+        setSessionStorageValue('timeEntryComments', jq('#initial_comments').val());
+        closeTimerstartPopup();
+        play();
+    });
+    
+    jq('#timerstart_close, #timerstart_cancel').click(function(){
+        closeTimerstartPopup();
     });
 
     jq('.slds-notify-container').hide();
@@ -219,7 +244,7 @@ jq(function(){
     };
 
     // show auto as the active tab
-    showAutoTab();
+    //showAutoTab();
 
     jq('#tab-default-1__item').click(function(){
         showAutoTab();
@@ -230,5 +255,18 @@ jq(function(){
         showManualTab();
 
     });
-
+    
+    jq('#save_running_timer').click(function(){
+        var duration = jq('#divId').data('seconds');
+        var comments = getSessionStorageValue('timeEntryComments');
+        var caseId = jq('#recordId').val();
+        if (duration>0){
+            addManualTime(duration, comments);
+            showMessage('total time updated.');
+            //Reset timer
+            setSessionStorageValue('secondsOnPage', 0);
+            setSessionStorageValue('timeEntryComments', '');
+            jq('#divId').timer('reset');
+        }
+    });
 });

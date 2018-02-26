@@ -289,6 +289,7 @@
 		$el.data('seconds', totalSeconds);
 		$el.data('state', TIMER_STOPPED);
 		duration = options.duration;
+        render();
 	}
 
 	function removeTimer() {

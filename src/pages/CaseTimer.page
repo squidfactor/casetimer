@@ -52,65 +52,22 @@
             </div>
             <!-- / PAGE HEADER -->
 
-            <div class="slds-tabs--default">
-                <ul class="slds-tabs--default__nav" role="tablist">
-                    <li class="slds-tabs--default__item slds-text-heading--label timer-tab-size" title="Item One" role="presentation">
-
-                        <img id="active-auto-icon" src="{!$Resource.timerautoactive}"/>
-                        <img id="inactive-auto-icon" src="{!$Resource.timerautoinactive}"/>
-                        <a class="slds-tabs--default__link" href="#void" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">Auto</a>
-                    </li>
-                    <li class="slds-tabs--default__item slds-text-heading--label timer-tab-size slds-active" title="Item Two" role="presentation">
-                        <img id="active-manual-icon" src="{!$Resource.timermanualactive}"/>
-                        <img id="inactive-manual-icon" src="{!$Resource.timermanualinactive}"/>
-                        <a class="slds-tabs--default__link" href="#void" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item">Manual</a>
-                    </li>
-                </ul>
+            
                 <div class="timer">
-
                     <center>
                         <ul class="buttonAndTimer">
                             <li><img id="play" src="{!$Resource.timerplay}" alt="playbutton" /> <img id="pause" src="{!$Resource.timerpause}" alt="pausebutton" />
                                 <!--  <p id="divId"/> -->
                                 <input id="divId" type='text' name='timer' class='slds-input'/>
                             </li>
-
+                            <li>
+                                <button class="slds-button slds-button--neutral slds-button--brand" id="save_running_timer">Log Time</button>
+                            </li>
                         </ul>
                     </center>
-
                 </div>
 
-                <div id="tab-default-1" class="slds-tabs--default__content" role="tabpanel" aria-labelledby="tab-default-1__item">
-                    <div class="slds-scrollable--y" style="max-height:220px;">
-                        <table class="slds-table slds-table--bordered slds-no-row-hover">
-                            <thead>
-                                <tr>
-                                    <th class="slds-text-heading--label slds-size--1-of-3" scope="col">AGENT'S NAME</th>
-                                    <th class="slds-text-heading--label slds-size--1-of-3" scope="col">DATE</th>
-                                    <th class="slds-text-heading--label slds-size--1-of-3" scope="col">DURATION</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-
-                                <apex:repeat value="{!sessions}" var="session">
-                                    <tr class="slds-hint-parent">
-                                        <td class="slds-size--1-of-3 agentname" data-label="AGENT'S NAME" >{!session.Agent__r.Name}</td>
-                                        <td class="slds-size--1-of-3" data-label="DATE">
-                                            <c:LocaleDate date_Value="{!session.Date__c}"/>
-                                        </td>
-                                        <td class="slds-size--1-of-3" data-label="DURATION" id="duration" data-duration="{!session.Duration__c}">
-                                            <c:TimeConversion seconds="{!session.Duration__c}"/>
-                                        </td>
-                                    </tr>
-                                </apex:repeat>
-
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
-                <div id="tab-default-2" class="slds-tabs--default__content" role="tabpanel" aria-labelledby="tab-default-2__item">
+                <div class="session-time-list">
                     <div class="slds-scrollable--y" style="max-height:220px;">
                         <apex:outputPanel id="showTable">
                             <table class="slds-table slds-table--bordered slds-no-row-hover">
@@ -138,8 +95,41 @@
                         </apex:outputPanel>
                     </div>
                 </div>
-
+            
+            
+            <div>
+                <div id="timerstart_popup" aria-hidden="false" role="dialog" class="slds-modal">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h2 class="slds-text-heading--medium">Start Timer</h2>
+                            <button class="slds-button slds-modal__close" id="timerstart_close">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--inverse slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Resource.timerlightningdesign, 'assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                        <div class="slds-modal__content">
+                            <div class="slds-form--stacked" style="clear:both; margin-top:10px;">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="initial_comments">Comments</label>
+                                    <div class="slds-form-element__control">
+                                        <textarea id="initial_comments" class="slds-textarea"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button--neutral" id="timerstart_cancel">Cancel</button>
+                            <button class="slds-button slds-button--neutral slds-button--brand" id="start">Start</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="timerstart_popup_backdrop" class="slds-modal-backdrop"></div>
             </div>
+            
+            
+            
 
             <div>
                 <div id="popup" aria-hidden="false" role="dialog" class="slds-modal">
@@ -185,8 +175,7 @@
                     </div>
 
                     <apex:form >
-
-                        <apex:actionFunction action="{!recordManualSession}" name="addManualTime" rerender="showTable, totalTimePanel">
+                        <apex:actionFunction action="{!recordManualSession}" name="addManualTime" rerender="mainTimer, showTable, totalTimePanel">
                             <apex:param name="duration" assignTo="{!duration}" value="" />
                             <apex:param name="comments" assignTo="{!comments}" value="" />
                         </apex:actionFunction>
