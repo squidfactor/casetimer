@@ -16,7 +16,9 @@ Please note if you have already installed the Case timer app in your org, please
 Any questions, please email me jun.liu@jmcloudservices.com
 
 ## How to Setup
+G
 
+adfaadninav
 Please click <a href="CaseTimer%20App%20Documentation%20v0.2-4.pdf">Setup Documentation</a> to see the instructions
 
 ## Bug fixes
